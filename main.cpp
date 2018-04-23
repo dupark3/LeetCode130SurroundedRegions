@@ -17,11 +17,46 @@ using namespace std;
 
 class Solution {
 public:
+    void PrintBoard(const vector< vector<char> >& board){
+        for (int row = 0; row != board.size(); ++row){
+            for (int column = 0; column != board[0].size(); ++column){
+                cout << board[row][column];
+            }
+        cout << endl;
+        }
+    }
+
     bool InfectNeighbors(vector< vector<char> >& board){
         size_t max_rows = board.size();
         size_t max_columns = board[0].size();
         bool InfectionMade = false;
+        
+        for (int row = 0; row != max_rows; ++row){
+            for (int column = 0; column != max_columns; ++column){
+                if (board[row][column] == 'I'){
 
+                    if(row != max_rows-1       && board[row+1][column] == 'O'){
+                        board[row+1][column] = 'I';
+                        InfectionMade = true;
+                    } 
+                        
+                    if(row != 0                && board[row-1][column] == 'O') {
+                        board[row-1][column] = 'I';
+                        InfectionMade = true;
+                    }
+                    if(column != 0             && board[row][column-1] == 'O') {
+                        board[row][column-1] = 'I';
+                        InfectionMade = true;
+                    }
+                    if(column != max_columns-1 && board[row][column+1] == 'O') {
+                        board[row][column+1] = 'I';
+                        InfectionMade = true;
+                    }
+
+                }
+                
+            }
+        }
         return InfectionMade;
     }
 
@@ -41,10 +76,6 @@ public:
                     if (column == 0 || column == max_columns -1){ // on left/right edge
                         if (board[row][column] == 'O') {
                             board[row][column] = 'I'; 
-                            if (board[row-1][column] == 'O') board[row-1][column] = 'I';
-                            if (board[row+1][column] == 'O') board[row+1][column] = 'I';
-                            if (column == 0 && board[row][column+1] == 'O') board[row][column+1] = 'I';
-                            if (column == max_columns-1 && board[row][column-1] == 'O') board[row][column-1] = 'I';
                         }
                     }
                     if (column == 0){
@@ -53,11 +84,7 @@ public:
                 } else if (row == max_rows - 1) { // on bottom row
                     if(board[row][column] == 'O') {
                         board[row][column] = 'I';
-                        if (board[row-1][column] == 'O'){
-                            board[row-1][column] = 'I';
-                        }
                     }
-
                 }
             }
         }
@@ -69,7 +96,7 @@ public:
     }
 
     void Disinfect(vector< vector<char> >& board){
-        
+
     }
 
     void solve(vector< vector<char> >& board) {
@@ -78,10 +105,14 @@ public:
         
         // initial infect: go through and "infect" border O's into I's 
         InfectBorders(board);
+        cout << "Post infect: " << endl;
+        PrintBoard(board);
         
         // continuous infect: go through and "infect" until no more infections happen
-        while(InfectNeighbors(board))
-            ; // nothing to do but keep infecting
+        while(InfectNeighbors(board)){
+            cout << "InfectNeighbors :" << endl; // nothing to do but keep infecting
+            PrintBoard(board);
+        }
 
         // flip all remaining uninfected O's into X's
         FlipRemainingOs(board);
@@ -108,12 +139,7 @@ int main(){
     Solution s;
     s.solve(board);
 
-    for (int row = 0; row != board.size(); ++row){
-        for (int column = 0; column != board[0].size(); ++column){
-            cout << board[row][column];
-        }
-    cout << endl;
-    }
+    s.PrintBoard(board);
 
     return 0;
 }
