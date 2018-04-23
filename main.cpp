@@ -18,8 +18,10 @@ using namespace std;
 class Solution {
 public:
     void PrintBoard(const vector< vector<char> >& board){
-        for (int row = 0; row != board.size(); ++row){
-            for (int column = 0; column != board[0].size(); ++column){
+        size_t max_rows = board.size();
+        size_t max_columns = board[0].size();
+        for (int row = 0; row != max_rows; ++row){
+            for (int column = 0; column != max_columns; ++column){
                 cout << board[row][column];
             }
         cout << endl;
@@ -65,7 +67,6 @@ public:
         size_t max_columns = board[0].size();
 
         for (int row = 0; row != max_rows; ++row){
-
             for (int column = 0; column != max_columns; ++column){
                 if (row == 0) { // on top row
                     if(board[row][column] == 'O') {
@@ -91,54 +92,57 @@ public:
     }
 
     void FlipRemainingOs(vector< vector<char> >& board){
-
+        size_t max_rows = board.size();
+        size_t max_columns = board[0].size();
+        for (int row = 0; row != max_rows; ++row){
+            for (int column = 0; column != max_columns; ++column){
+                if(board[row][column] == 'O')
+                    board[row][column] = 'X';
+            }
+        }
 
     }
 
     void Disinfect(vector< vector<char> >& board){
-
+        size_t max_rows = board.size();
+        size_t max_columns = board[0].size();
+        for (int row = 0; row != max_rows; ++row){
+            for (int column = 0; column != max_columns; ++column){
+                if(board[row][column] == 'I')
+                    board[row][column] = 'O';
+            }
+        }
     }
 
     void solve(vector< vector<char> >& board) {
         size_t max_rows = board.size();
         size_t max_columns = board[0].size();
-        
-        // initial infect: go through and "infect" border O's into I's 
-        InfectBorders(board);
-        cout << "Post infect: " << endl;
-        PrintBoard(board);
-        
-        // continuous infect: go through and "infect" until no more infections happen
-        while(InfectNeighbors(board)){
-            cout << "InfectNeighbors :" << endl; // nothing to do but keep infecting
-            PrintBoard(board);
+        if(board.size() != 0){
+            // initial infect: go through and "infect" border O's into I's 
+            InfectBorders(board);
+            
+            // continuous infect: go through and "infect" until no more infections happen
+            while(InfectNeighbors(board))
+                ; // nothing to do but keep infecting       
+
+            // flip all remaining uninfected O's into X's
+            FlipRemainingOs(board);
+
+            // flip back infected I's into O's
+            Disinfect(board);    
         }
-
-        // flip all remaining uninfected O's into X's
-        FlipRemainingOs(board);
-
-        // flip back infected I's into O's
-        Disinfect(board);
+        
     }
 };
 
-/*if (board[row][column] == 'I'){
-    if (board[row+1][column] == 'O') board[row+1][column]='I';
-    if (board[row-1][column] == 'O') board[row-1][column]='I';
-    if (column != max_columns - 1 && board[row][column+1] == 'O') board[row][column+1]='I';
-    if (column != 0 && board[row][column-1] == 'O') board[row][column-1]='I';
-
-}*/
-
 int main(){
-    vector< vector<char> > board= { {'X', 'X', 'O', 'X'},
+    vector< vector<char> > board= { {'X', 'X', 'X', 'X'},
                                     {'X', 'O', 'O', 'X'},
                                     {'X', 'X', 'O', 'X'},
                                     {'X', 'O', 'X', 'X'}};
 
     Solution s;
     s.solve(board);
-
     s.PrintBoard(board);
 
     return 0;
