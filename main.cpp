@@ -115,9 +115,9 @@ public:
     }
 
     void solve(vector< vector<char> >& board) {
-        size_t max_rows = board.size();
-        size_t max_columns = board[0].size();
-        if(board.size() != 0){
+        if(!board.empty()){
+            size_t max_rows = board.size();
+            size_t max_columns = board[0].size();
             // initial infect: go through and "infect" border O's into I's 
             InfectBorders(board);
             
