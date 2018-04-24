@@ -120,10 +120,9 @@ public:
             // initial infect: go through and "infect" border O's into I's 
             InfectBorders(board, max_rows, max_columns);
             
-            cout << "borders done" << endl;
             // continuous infect: go through and "infect" until no more infections happen
             while(InfectNeighbors(board, max_rows, max_columns))
-                cout << "infecting" << endl; // nothing to do but keep infecting
+                ; // nothing to do but keep infecting
 
             // flip all remaining uninfected O's into X's and I's back to O's
             FlipBack(board, max_rows, max_columns);
