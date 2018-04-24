@@ -47,7 +47,7 @@ public:
                 } 
 
                 // on bottom row
-                else if (row == max_rows - 1) { 
+                else { 
                     if(board[row][column] == 'O') board[row][column] = 'I';
                 }
             } // end of inner loop (columns)
@@ -61,12 +61,11 @@ public:
         for (int row = 0; row != max_rows; ++row){
             for (int column = 0; column != max_columns; ++column){
                 if (board[row][column] == 'I'){
-
+                    // check below, above, left, and right
                     if(row != max_rows-1       && board[row+1][column] == 'O'){
                         board[row+1][column] = 'I';
                         InfectionMade = true;
                     } 
-                        
                     if(row != 0                && board[row-1][column] == 'O') {
                         board[row-1][column] = 'I';
                         InfectionMade = true;
@@ -79,29 +78,36 @@ public:
                         board[row][column+1] = 'I';
                         InfectionMade = true;
                     }
-
+                } else if (board[row][column] == 'O'){
+                    // check below, above, left, and right
+                    if(row != max_rows-1       && board[row+1][column] == 'I'){
+                        board[row+1][column] = 'I';
+                        InfectionMade = true;
+                    } 
+                    if(row != 0                && board[row-1][column] == 'I') {
+                        board[row-1][column] = 'I';
+                        InfectionMade = true;
+                    }
+                    if(column != 0             && board[row][column-1] == 'I') {
+                        board[row][column-1] = 'I';
+                        InfectionMade = true;
+                    }
+                    if(column != max_columns-1 && board[row][column+1] == 'I') {
+                        board[row][column+1] = 'I';
+                        InfectionMade = true;
+                    }
                 }
-                
-            }
-        }
+            } // end of inner loop (columns)
+        } // end of outer loop (rows)
+        
         return InfectionMade;
     }
 
-    void FlipRemainingOs(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
+    void FlipBack(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
         for (int row = 0; row != max_rows; ++row){
             for (int column = 0; column != max_columns; ++column){
-                if(board[row][column] == 'O')
-                    board[row][column] = 'X';
-            }
-        }
-
-    }
-
-    void Disinfect(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
-        for (int row = 0; row != max_rows; ++row){
-            for (int column = 0; column != max_columns; ++column){
-                if(board[row][column] == 'I')
-                    board[row][column] = 'O';
+                if(board[row][column] == 'O') board[row][column] = 'X';
+                if(board[row][column] == 'I') board[row][column] = 'O';
             }
         }
     }
@@ -114,15 +120,13 @@ public:
             // initial infect: go through and "infect" border O's into I's 
             InfectBorders(board, max_rows, max_columns);
             
+            cout << "borders done" << endl;
             // continuous infect: go through and "infect" until no more infections happen
             while(InfectNeighbors(board, max_rows, max_columns))
-                ; // nothing to do but keep infecting
+                cout << "infecting" << endl; // nothing to do but keep infecting
 
-            // flip all remaining uninfected O's into X's
-            FlipRemainingOs(board, max_rows, max_columns);
-
-            // flip back infected I's into O's
-            Disinfect(board, max_rows, max_columns);
+            // flip all remaining uninfected O's into X's and I's back to O's
+            FlipBack(board, max_rows, max_columns);
         }
         
     }
@@ -131,17 +135,16 @@ public:
 int main(){
     
     vector< vector<char> > board= { {'X', 'X', 'X', 'X', 'O', 'X'},
-                                    {'X', 'O', 'O', 'X', 'X', 'X'},
-                                    {'X', 'X', 'O', 'X', 'O', 'X'},
+                                    {'X', 'O', 'O', 'O', 'O', 'O'},
+                                    {'X', 'X', 'O', 'O', 'O', 'X'},
                                     {'X', 'O', 'X', 'X', 'X', 'O'} };
-    
-
+    if (board.empty())
+        return 1;
     
     Solution s;
     s.solve(board);
-    if (!board.empty()){
-        s.PrintBoard(board, board.size(), board[0].size());
-    }
+    s.PrintBoard(board, board.size(), board[0].size());
+    
     
     return 0;
 }
