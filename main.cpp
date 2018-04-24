@@ -17,9 +17,7 @@ using namespace std;
 
 class Solution {
 public:
-    void PrintBoard(const vector< vector<char> >& board){
-        size_t max_rows = board.size();
-        size_t max_columns = board[0].size();
+    void PrintBoard(const vector< vector<char> >& board, size_t max_rows, size_t max_columns){
         for (int row = 0; row != max_rows; ++row){
             for (int column = 0; column != max_columns; ++column){
                 cout << board[row][column];
@@ -28,9 +26,36 @@ public:
         }
     }
 
-    bool InfectNeighbors(vector< vector<char> >& board){
-        size_t max_rows = board.size();
-        size_t max_columns = board[0].size();
+    void InfectBorders(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
+        for (int row = 0; row != max_rows; ++row){
+            for (int column = 0; column != max_columns; ++column){
+                
+                // on top row
+                if (row == 0) { 
+                    if(board[row][column] == 'O') board[row][column] = 'I';                        
+                } 
+                
+                // in middle rows
+                else if (row > 0 && row < max_rows - 1) { 
+                    // no need to check if on left or right edge
+                    if (board[row][column] == 'O') board[row][column] = 'I'; 
+
+                    // advance the next loop to the last column, ++(max_columns - 2)
+                    if (column == 0 && max_columns > 1) column = max_columns - 2; 
+                    // else, we only have one column or we are on the right edge
+                    else column = max_columns - 1;
+                } 
+
+                // on bottom row
+                else if (row == max_rows - 1) { 
+                    if(board[row][column] == 'O') board[row][column] = 'I';
+                }
+            } // end of inner loop (columns)
+        } // end of outer loop (rows)
+
+    }
+
+    bool InfectNeighbors(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
         bool InfectionMade = false;
         
         for (int row = 0; row != max_rows; ++row){
@@ -62,38 +87,7 @@ public:
         return InfectionMade;
     }
 
-    void InfectBorders(vector< vector<char> >& board){
-        size_t max_rows = board.size();
-        size_t max_columns = board[0].size();
-
-        for (int row = 0; row != max_rows; ++row){
-            for (int column = 0; column != max_columns; ++column){
-                if (row == 0) { // on top row
-                    if(board[row][column] == 'O') {
-                        board[row][column] = 'I';
-                        if (board[row+1][column] == 'O') board[row+1][column] = 'I';
-                    }
-                } else if (row != 0 && row != max_rows - 1) { // in middle rows
-                    if (column == 0 || column == max_columns -1){ // on left/right edge
-                        if (board[row][column] == 'O') {
-                            board[row][column] = 'I'; 
-                        }
-                    }
-                    if (column == 0){
-                        column = max_columns - 2; // will advance next loop to max_columns-1, the last col
-                    }
-                } else if (row == max_rows - 1) { // on bottom row
-                    if(board[row][column] == 'O') {
-                        board[row][column] = 'I';
-                    }
-                }
-            }
-        }
-    }
-
-    void FlipRemainingOs(vector< vector<char> >& board){
-        size_t max_rows = board.size();
-        size_t max_columns = board[0].size();
+    void FlipRemainingOs(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
         for (int row = 0; row != max_rows; ++row){
             for (int column = 0; column != max_columns; ++column){
                 if(board[row][column] == 'O')
@@ -103,9 +97,7 @@ public:
 
     }
 
-    void Disinfect(vector< vector<char> >& board){
-        size_t max_rows = board.size();
-        size_t max_columns = board[0].size();
+    void Disinfect(vector< vector<char> >& board, size_t max_rows, size_t max_columns){
         for (int row = 0; row != max_rows; ++row){
             for (int column = 0; column != max_columns; ++column){
                 if(board[row][column] == 'I')
@@ -118,32 +110,38 @@ public:
         if(!board.empty()){
             size_t max_rows = board.size();
             size_t max_columns = board[0].size();
+
             // initial infect: go through and "infect" border O's into I's 
-            InfectBorders(board);
+            InfectBorders(board, max_rows, max_columns);
             
             // continuous infect: go through and "infect" until no more infections happen
-            while(InfectNeighbors(board))
-                ; // nothing to do but keep infecting       
+            while(InfectNeighbors(board, max_rows, max_columns))
+                ; // nothing to do but keep infecting
 
             // flip all remaining uninfected O's into X's
-            FlipRemainingOs(board);
+            FlipRemainingOs(board, max_rows, max_columns);
 
             // flip back infected I's into O's
-            Disinfect(board);    
+            Disinfect(board, max_rows, max_columns);
         }
         
     }
 };
 
 int main(){
-    vector< vector<char> > board= { {'X', 'X', 'X', 'X'},
-                                    {'X', 'O', 'O', 'X'},
-                                    {'X', 'X', 'O', 'X'},
-                                    {'X', 'O', 'X', 'X'}};
+    
+    vector< vector<char> > board= { {'X', 'X', 'X', 'X', 'O', 'X'},
+                                    {'X', 'O', 'O', 'X', 'X', 'X'},
+                                    {'X', 'X', 'O', 'X', 'O', 'X'},
+                                    {'X', 'O', 'X', 'X', 'X', 'O'} };
+    
 
+    
     Solution s;
     s.solve(board);
-    s.PrintBoard(board);
-
+    if (!board.empty()){
+        s.PrintBoard(board, board.size(), board[0].size());
+    }
+    
     return 0;
 }
