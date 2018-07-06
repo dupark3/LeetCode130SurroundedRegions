@@ -134,16 +134,15 @@ public:
 int main(){
     
     vector< vector<char> > board= { {'X', 'X', 'X', 'X', 'O', 'X'},
-                                    {'X', 'O', 'O', 'O', 'O', 'O'},
+                                    {'X', 'O', 'O', 'O', 'X', 'X'},
                                     {'X', 'X', 'O', 'O', 'O', 'X'},
                                     {'X', 'O', 'X', 'X', 'X', 'O'} };
     if (board.empty())
         return 1;
-    
     Solution s;
+
     s.solve(board);
     s.PrintBoard(board, board.size(), board[0].size());
-    
-    
+        
     return 0;
 }
